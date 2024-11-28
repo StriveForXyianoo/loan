@@ -2,7 +2,7 @@
 
 $host = 'localhost';
 $user = 'root';
-$pass = '';
+$pass = 'kentuser11A@';
 $db = 'loan_system';
 
 
