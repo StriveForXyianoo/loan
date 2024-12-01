@@ -100,9 +100,7 @@ include 'includes/sidebar.php';
                                             <div class="col">
                                             <img src="../uploads/documents/<?php echo $vrow['FILEP']?>" class="img-thumbnail" alt="...">
                                             </div>
-                                            <div class="col">
-                                            <img src="../uploads/images/<?php echo $urow['FILEP']?>" class="img-thumbnail" alt="...">
-                                            </div>
+                                            
                                             <div class="col">
                                               <div class="form-group mb-2">
                                                 <label for="name" class="form-label">Name</label>

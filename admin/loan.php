@@ -40,13 +40,8 @@ include 'includes/sidebar.php';
                                 <th>Loan Type</th>
                                 <th>Amount</th>
                                 <th>Loan Status</th>
-                                <?php
-                                if($_SESSION['role'] == 'ADMIN'){
-                                  ?>
-                                  <th>Action</th>
-                                  <?php
-                                }
-                                ?>
+                                <th>Action</th>
+                                
                             </tr>
                         </thead>
                         <?php
@@ -70,7 +65,26 @@ include 'includes/sidebar.php';
                             if($_SESSION['role'] == 'ADMIN'){
                               ?>
                               <td>
-                                <a href="loan_delete.php?id=<?php echo $row['LOID']?>" class="btn btn-danger btn-sm">Update</a>
+                                <?php
+                                if($row['STATUS'] == 'PENDING'){
+                                  ?>
+                                  <button onclick="approved(<?php echo $row['LOID']?>)" class="btn-sm btn btn-success">Approve</button>
+                                  <button onclick="disapproved(<?php echo $row['LOID']?>)" class="btn-sm btn btn-danger">Disapprove</button>
+                                  
+                                  <?php
+                                }else{
+                                  ?>
+                                  <a href="loan_view.php?id=<?php echo $row['LOID']?>" class="btn btn-warning btn-sm">View Loan</a>
+                                  <?php
+                                }
+                                ?>
+                                
+                              </td>
+                              <?php
+                            }else{
+                              ?>
+                              <td>
+                                <a href="loan_view.php?id=<?php echo $row['LOID']?>" class="btn btn-warning btn-sm">View Loan</a>
                               </td>
                               <?php
                             }
@@ -95,6 +109,100 @@ include 'includes/sidebar.php';
 <?php
 include 'includes/script.php';
 ?>
+
+<script>
+  function approved(approveid) {
+    // Add Sweet Alert confirmation
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to approve this loan?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Approve it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show a loading indicator
+        Swal.fire({
+          title: 'Processing...',
+          text: 'Please wait while the loan is being approved.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading(); // Start the loader
+          }
+        });
+
+        // Perform the AJAX call
+        $.ajax({
+          url: 'controllers/loanapproval.php',
+          type: 'POST',
+          data: { approveid: approveid },
+          success: function(data) {
+           //location reload
+            location.reload();
+          },
+          error: function() {
+            // Handle errors and close loader
+            Swal.fire(
+              'Error!',
+              'Something went wrong. Please try again.',
+              'error'
+            );
+          }
+        });
+      }
+    });
+  }
+</script>
+<script>
+  function disapproved(disapproveid) {
+    // Add Sweet Alert confirmation
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to disapprove this loan?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Disapprove it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Show a loading indicator
+        Swal.fire({
+          title: 'Processing...',
+          text: 'Please wait while the loan is being disapproved.',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading(); // Start the loader
+          }
+        });
+
+        // Perform the AJAX call
+        $.ajax({
+          url: 'controllers/loanapproval.php',
+          type: 'POST',
+          data: { disapproveid: disapproveid },
+          success: function(data) {
+           //location reload
+            location.reload();
+            
+          },
+          error: function() {
+            // Handle errors and close loader
+            Swal.fire(
+              'Error!',
+              'Something went wrong. Please try again.',
+              'error'
+            );
+          }
+        });
+      }
+    });
+  }
+</script>
 
 <?php
 include 'includes/footer.php';

@@ -4,7 +4,7 @@ session_start();
 // Database connection
 $host = "localhost";
 $user = "root";
-$password = "";
+$password = "kentuser11A@";
 $dbname = "loan_system";
 $conn = new mysqli($host, $user, $password, $dbname);
 

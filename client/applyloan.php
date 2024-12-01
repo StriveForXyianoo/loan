@@ -310,14 +310,55 @@ include 'includes/script.php';
 </script>
 
 <script>
-  $(document).ready(function() {
-    $('#applyLoanButton').on('click', function(e) {
-      e.preventDefault();
+$(document).ready(function() {
+  $('#applyLoanButton').on('click', function(e) {
+    e.preventDefault(); // Prevent the form from submitting normally
 
-      window.location.href = 'face_recognition.php';
+    // Collect form data
+    var formData = $('#loanForm').serialize();
+
+    // Send the data using AJAX
+    $.ajax({
+      type: 'POST',
+      url: 'controllers/applyloan.php',
+      data: formData,
+      success: function(response) {
+        //add sweet alert
+        
+          Swal.fire({
+            icon: response.status,
+            title: response.status,
+            text: response.message
+          });
+          //redirect to the facerecognition page with the special order
+          if(response.status == 'success'){
+            window.location.href = 'face_recognition.php?specialorder='+response.specialorder;
+          }
+       
+      },
+      error: function(xhr, status, error) {
+        // Handle errors
+        alert('There was an error submitting your application');
+      }
     });
   });
+});
 </script>
+<?php
+if(isset($_SESSION['status'])){
+  ?>
+  <script>
+          Swal.fire({
+            icon: '<?= $_SESSION['status'] ?>',
+            title: '<?= $_SESSION['status'] ?>',
+            text: '<?= $_SESSION['msg'] ?>'
+          });
+  </script>
+  <?php
+  unset($_SESSION['status']);
+}
+?>
+
 <?php
 include 'includes/footer.php';
 ?>

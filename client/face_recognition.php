@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+<?php
+//get the specialorder
+$specialorder = $_GET['specialorder'];
 
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +13,7 @@
     <style>
         .camera {
             width: 100%;
-            height: 400px;
+            height: 80vh;
             background-color: #eaeaea;
             position: relative;
             display: flex;
@@ -108,6 +112,8 @@
                         .then(data => {
                             if (data.status === "success") {
                                 alert(data.message); // Display success message
+                            //redirect to controllers/applyloanverified.php with the specialorder
+                            window.location.href = `controllers/applyloanverified.php?specialorder=<?php echo $specialorder; ?>`;
                             } else {
                                 alert(data.message); // Display error message
                             }

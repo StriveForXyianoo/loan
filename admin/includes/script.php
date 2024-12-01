@@ -101,3 +101,4 @@ if (isset($_SESSION['msgstatus'])) {
   unset($_SESSION['msgstatus']);
 }
 ?>  
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

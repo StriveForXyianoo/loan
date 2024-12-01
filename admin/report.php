@@ -26,7 +26,36 @@ include 'includes/sidebar.php';
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
-       
+        <div class=" card card-outline card-warning">
+          <div class="card-header">
+            <h3 class="card-title">Reports</h3>
+          </div>
+          <div class="card-body">
+            <table class="table table-hover table-bordered">
+              <thead>
+                <tr>
+                  <th>Report</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Membership Report</td>
+                  <td><a href="clientreport.php"  target="__blank" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+                <tr>
+                  <td>Loan  Reports</td>
+                  <td><a href="loanreport.php" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+                <tr>
+                  <td>Monthly Collection Report</td>
+                  <td><a href="index" class="btn btn-primary btn-sm">View</a></td>
+                </tr>
+               
+              </tbody>
+            </table>
+          </div>
+        </div>
         </div>
       </div><!-- /.container-fluid -->
     </section>

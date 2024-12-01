@@ -54,8 +54,8 @@ include 'includes/sidebar.php';
                           <h6><?php echo "₱".number_format($plrow["LOANAMOUNT"],2,".",",")?></h6>
                           <p><?php echo date('F j, Y', strtotime($plrow["LOANDATE"]));?></p>
                           <p class="text-danger"><?php echo $plrow["STATUS"]?></p>
-                          <button class="btn btn-sm btn-info">View</button>
-                          <button class="btn btn-sm btn-danger">Cancel</button>
+                         
+                          <button onclick="loancancel(<?php echo $plrow['ID']?>)" class="btn btn-sm btn-danger">Cancel</button>
                         </div>
                       </div>
 
@@ -97,15 +97,14 @@ include 'includes/sidebar.php';
                           <h6><?php echo "₱".number_format($plrow["LOANAMOUNT"],2,".",",")?></h6>
                           <p><?php echo date('F j, Y', strtotime($plrow["LOANDATE"]));?></p>
                           <p class="text-danger"><?php echo $plrow["STATUS"]?></p>
-                          <button class="btn btn-sm btn-info">View</button>
-                          <button class="btn btn-sm btn-danger">Cancel</button>
+
                         </div>
                       </div>
 
                     <?php
                   }
                 }else{
-                  echo "<p class='text-center text-danger'>No Pending Loan</p>";
+                  echo "<p class='text-center text-danger'>No Approved Loan</p>";
                 }
                 ?>
 
@@ -115,13 +114,13 @@ include 'includes/sidebar.php';
           <div class="col-lg-4 col-sm-12 col-md-12">
             <div class="card card-outline card-success">
               <div class="card-header">
-                <h3 class="card-title text-center">Done/Decline Loan</h3>
+                <h3 class="card-title text-center">Done/Decline/Cancel Loan</h3>
               </div>
               <div class="card-body">
 
               <?php
                 $clientid = $_SESSION['id'];
-                $plsql = "SELECT * FROM clientloan WHERE CLIENTID = '$clientid' AND STATUS = 'DONE' OR STATUS = 'DECLINED'";
+                $plsql = "SELECT * FROM clientloan WHERE CLIENTID = '$clientid' AND STATUS = 'DONE' OR STATUS = 'DECLINED'  OR STATUS = 'CANCELLED'";
                 $plresult = mysqli_query($conn, $plsql);
                 if(mysqli_num_rows($plresult) > 0) {
                   foreach($plresult as $plrow){
@@ -140,15 +139,15 @@ include 'includes/sidebar.php';
                           <h6><?php echo "₱".number_format($plrow["LOANAMOUNT"],2,".",",")?></h6>
                           <p><?php echo date('F j, Y', strtotime($plrow["LOANDATE"]));?></p>
                           <p class="text-danger"><?php echo $plrow["STATUS"]?></p>
-                          <button class="btn btn-sm btn-info">View</button>
-                          <button class="btn btn-sm btn-danger">Cancel</button>
+                          
+                          
                         </div>
                       </div>
 
                     <?php
                   }
                 }else{
-                  echo "<p class='text-center text-danger'>No Pending Loan</p>";
+                  echo "<p class='text-center text-danger'>No Done/Declined Loan</p>";
                 }
                 ?>
 
@@ -167,7 +166,41 @@ include 'includes/sidebar.php';
 <?php
 include 'includes/script.php';
 ?>
+<script>
+  function loancancel(cancelthisid){
+    //add a  sweet alert confirmation and  loader
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You want to cancel this loan?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, Cancel it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "POST",
+          url: "controllers/cancelloan.php",
+          data: {
+            cancelthisid: cancelthisid
+          },
+          success: function(response){
+            Swal.fire(
+              'Cancelled!',
+              'Your loan has been cancelled.',
+              'success'
+            ).then((result) => {
+              location.reload();
+            });
+          }
+        });
+      }
+    });
 
+    
+  }
+</script>
 <?php
 include 'includes/footer.php';
 ?>

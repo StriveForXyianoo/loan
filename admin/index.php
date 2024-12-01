@@ -2,6 +2,33 @@
 include 'includes/header.php';
 include 'includes/nav.php';
 include 'includes/sidebar.php';
+
+//count the pending
+$csql = "SELECT COUNT(ID) as count FROM clientloan WHERE STATUS = 'PENDING'";
+$cquery = mysqli_query($conn, $csql);
+$crow = mysqli_fetch_assoc($cquery);
+$pending = $crow['count'];
+
+//count the approved
+$csql = "SELECT COUNT(ID) as count FROM clientloan WHERE STATUS = 'APPROVED'";
+$cquery = mysqli_query($conn, $csql);
+$crow = mysqli_fetch_assoc($cquery);
+$approved = $crow['count'];
+
+
+//coun the number of approve  client
+$csql = "SELECT COUNT(ID) as count FROM clientinformation WHERE REGISTRATIONSTATUS = 'APPROVED'";
+$cquery = mysqli_query($conn, $csql);
+$crow = mysqli_fetch_assoc($cquery);
+$approvedclient = $crow['count'];
+
+//coun the number of pending  client
+$csql = "SELECT COUNT(ID) as count FROM clientinformation WHERE REGISTRATIONSTATUS = 'PENDING'";
+$cquery = mysqli_query($conn, $csql);
+$crow = mysqli_fetch_assoc($cquery);
+$pendingclient = $crow['count'];
+
+
 ?>
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
@@ -32,7 +59,11 @@ include 'includes/sidebar.php';
               <!-- small box -->
               <div class="small-box bg-info">
                 <div class="inner">
-                  <h3>150</h3>
+                  <h3>
+                  <?php
+                  echo $pending;
+                  ?>
+                  </h3>
 
                   <p>Pending Application</p>
                 </div>
@@ -47,9 +78,13 @@ include 'includes/sidebar.php';
             <!-- small box -->
             <div class="small-box bg-success">
               <div class="inner">
-                <h3>53<sup style="font-size: 20px">%</sup></h3>
+                <h3>
+                <?php
+                echo $approved;
+                ?>
+                </h3>
 
-                <p>Pending Loans</p>
+                <p>Approved Loans</p>
               </div>
               <div class="icon">
               <i class="fa fa-credit-card" aria-hidden="true"></i>
@@ -62,7 +97,11 @@ include 'includes/sidebar.php';
             <!-- small box -->
             <div class="small-box bg-warning">
               <div class="inner">
-                <h3>44</h3>
+                <h3>
+                <?php
+                echo $approvedclient;
+                ?>
+                </h3>
 
                 <p>User Registrations</p>
               </div>
@@ -77,7 +116,13 @@ include 'includes/sidebar.php';
             <!-- small box -->
             <div class="small-box bg-danger">
               <div class="inner">
-                <h3>65</h3>
+                <h3>
+
+                <?php
+                echo $pendingclient;
+                ?>
+                
+                </h3>
 
                 <p>Unvefied Users</p>
               </div>
@@ -96,7 +141,7 @@ include 'includes/sidebar.php';
                     <div class="card-header">
                       <h3 class="card-title">
                         <i class="fas fa-chart-pie mr-1"></i>
-                          Loan Amount Disbursed
+                          Monthly Collection
                       </h3>
                       
                     </div><!-- /.card-header -->
@@ -105,7 +150,7 @@ include 'includes/sidebar.php';
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="revenue-chart"
                             style="position: relative; height: 300px;">
-                            <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>                         
+                            <canvas id="revenue" height="300" style="height: 300px;width:100%"></canvas>                         
                         </div>
                         
                       </div>
@@ -125,7 +170,7 @@ include 'includes/sidebar.php';
                         <!-- Morris chart - Sales -->
                         <div class="chart tab-pane active" id="revenue-chart"
                             style="position: relative; height: 300px;">
-                            <canvas id="revenue-chart-canvas" height="300" style="height: 300px;"></canvas>                         
+                            <canvas id="loantype" height="300" style="height: 300px;"></canvas>                         
                         </div>
                         
                       </div>
@@ -145,7 +190,85 @@ include 'includes/sidebar.php';
 <?php
 include 'includes/script.php';
 ?>
+ <script>
+        // Fetch data from the backend
+        fetch('monthly.php') // Replace with the path to your PHP file
+            .then(response => response.json())
+            .then(data => {
+                // Extract labels and data from the fetched data
+                const labels = data.map(item => item.month); // X-axis: Months
+                const collections = data.map(item => item.total_collections); // Y-axis: Total collections
 
+                // Create the bar chart
+                const ctx = document.getElementById('revenue').getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar', // Chart type
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Monthly Collections (₱)',
+                            data: collections,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true // Start Y-axis at 0
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
+    <script>
+        // Fetch data from the PHP backend
+        fetch('loantype.php') // Replace with the correct path to your PHP file
+            .then(response => response.json())
+            .then(data => {
+                // Extract the loan types and their counts
+                const labels = data.map(item => item.LOANTYPE); // Loan types
+                const counts = data.map(item => item.count); // Loan type counts
+
+                // Create the pie chart
+                const ctx = document.getElementById('loantype').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie', // Pie chart type
+                    data: {
+                        labels: labels, // Loan types as labels
+                        datasets: [{
+                            label: 'Loan Type Distribution',
+                            data: counts, // Total counts per loan type
+                            backgroundColor: ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFFF33'], // Colors for each slice
+                            borderColor: '#fff',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(tooltipItem) {
+                                        const label = tooltipItem.label || '';
+                                        const value = tooltipItem.raw || 0;
+                                        return `${label}: ${value}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            })
+            .catch(error => console.error('Error fetching data:', error));
+    </script>
 <?php
 include 'includes/footer.php';
 ?>

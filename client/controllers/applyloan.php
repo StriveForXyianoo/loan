@@ -41,6 +41,15 @@ header('Content-Type: application/json');  // Set header to return JSON response
         exit;
     }
 
+    //randon characters
+    $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    $charactersLength = strlen($characters);
+    $randomString = '';
+    for ($i = 0; $i < 10; $i++) {
+        $randomString .= $characters[rand(0, $charactersLength - 1)];
+    }
+    $specialorder = $randomString;
+
     // Check if there's a pending or ongoing loan
     $sql = "SELECT * FROM clientloan WHERE CLIENTID = '$clientID' AND (STATUS = 'PENDING' OR STATUS = 'ONGOING')";
     $result = mysqli_query($conn, $sql);
@@ -54,14 +63,16 @@ header('Content-Type: application/json');  // Set header to return JSON response
     }
 
     // Insert loan application
-    $sql = "INSERT INTO `clientloan`(`CLIENTID`, `LOANID`, `LOANAMOUNT`, `TERM`, `INTEREST`, `CBU`, `FILLING`, `INSURANCE`, `NETPRO`, `LOANDATE`, `STATUS`) 
-            VALUES ('$clientID','$loanID','$amount','$term','$interest','$cbu','$filling','$insurance','$netpro',NOW(),'PENDING')";
+    $sql = "INSERT INTO `clientloanpresubmit`(`CLIENTID`, `LOANID`, `LOANAMOUNT`, `TERM`, `INTEREST`, `CBU`, `FILLING`, `INSURANCE`, `NETPRO`, `LOANDATE`, `STATUS`,`SPECIALORDER`) 
+            VALUES ('$clientID','$loanID','$amount','$term','$interest','$cbu','$filling','$insurance','$netpro',NOW(),'PENDING','$specialorder')";
     $result = mysqli_query($conn, $sql);
 
     if ($result) {
         $response = [
             'status' => 'success',
-            'message' => 'Redirecting to Face Recognition.'
+            'message' => 'Redirecting to Face Recognition.',
+            'specialorder' => $specialorder
+
         ];
     } else {
         $response = [

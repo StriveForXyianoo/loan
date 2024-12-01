@@ -92,16 +92,16 @@
 
                         <div class="col-lg-4 col-md-12 col-sm-12">
                             <!-- Camera for Face Capture -->
-                            <div class="camera" style="position:relative; width:100%; height: 300px; background-color: #eaeaea;"></div>
+                            <div class="camera" id="cameradaw" style="position:relative; width:100%; height: 300px; background-color: #eaeaea;"></div>
                             <canvas id="canvas" style="display:none; width:100%;"></canvas> <!-- Hidden canvas to capture the image -->
                             <input type="file" id="captureInput" name="capture" style="display:none;"> <!-- Hidden file input to upload the captured image -->
-                            <a onclick="capture()" class="btn btn-warning float-right">Capture</a>
+                            <a onclick="capture()" id="capture" class="btn btn-warning float-right">Capture</a>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-footer">
-                    <button type="submit" name="register" class="btn btn-success float-right">Save</button>
+                    <button type="submit" name="register" id="register" class="btn btn-success float-right">Save</button>
                     <button type="reset" class="btn btn-danger float-left">Clear</button>
                 </div>
             </form>
@@ -114,6 +114,7 @@
     <script src="admin/includes/assets/dist/js/adminlte.min.js"></script>
 
     <script>
+        document.getElementById('register').style.display = "none";
         // Wait for the DOM to load
         document.addEventListener("DOMContentLoaded", function() {
             const cameraDiv = document.querySelector('.camera'); // Get the camera div
@@ -162,7 +163,13 @@
                 canvas.height = video.videoHeight;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                canvas.style.display = "block"; // Show the captured image
+                canvas.style.display = "none"; // Show the captured image
+                //hide the capture button
+                document.getElementById('capture').style.display = "none";
+                //hide cameradaw
+                //hide the register button
+                
+                document.getElementById('cameradaw').style.display = "none";
                 video.srcObject.getTracks().forEach(track => track.stop()); // Stop video stream
                 video.style.display = "none"; // Hide video element
 
@@ -193,7 +200,11 @@
                                         })
                                         .then(response => response.text()) // Change this to text to log raw response
                                         .then(data => {
-                                            console.log(data); // Log the raw response from the server
+                                            alert("Face Recognize");
+                                            //check if the registration button is clicked
+                                            document.getElementById('register').style.display = "block";
+
+                                        
                                         })
                                         .catch(err => {
                                             console.error("Error in registration:", err); // Log any fetch-related errors
@@ -202,15 +213,21 @@
                                 } else {
                                     console.error("No face descriptor generated"); // Log error if face descriptor is missing
                                     alert('No face detected');
+                                    //reload the page
+                                    window.location.href = 'registration';
                                 }
                             } else {
                                 console.error("No face detected in the image"); // Log if no face detected
                                 alert('No face detected');
+                                //reload the page
+                                window.location.href = 'registration';
                             }
                         })
                         .catch(err => {
                             console.error("Error in face-api.js face detection:", err); // Log error
                             alert('Error detecting face: ' + err);
+                            //reload the page
+                            window.location.href = 'registration';
                         });
                 }, 'image/png');
             };
